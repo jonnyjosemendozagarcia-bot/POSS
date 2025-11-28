@@ -4,15 +4,16 @@ use App\Http\Controllers\AuthController;
 use App\Http\Controllers\EmpresaController;
 use App\Http\Controllers\ProductoController;
 use App\Http\Controllers\CategoriaController;
+use App\Http\Middleware\AuthenticateApi;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Route;
 
-// 🔓 Rutas públicas (sin autenticación)
+// 🔓 Rutas públicas
 Route::post('/register', [AuthController::class, 'register']);
 Route::post('/login', [AuthController::class, 'login']);
 
-// 🔐 Rutas protegidas (requieren token)
-Route::middleware('auth:sanctum')->group(function () {
+// 🔐 Rutas protegidas
+Route::middleware(AuthenticateApi::class)->group(function () {
     Route::post('/logout', [AuthController::class, 'logout']);
     
     Route::apiResource('empresas', EmpresaController::class);

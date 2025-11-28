@@ -6,7 +6,7 @@ use App\Models\Producto;
 use Illuminate\Http\Request;
 use Illuminate\Http\Response;
 
-class ProductoController extends Controller
+class ProductoController extends BaseController
 {
     /**
      * Display a listing of the resource.
@@ -16,11 +16,6 @@ class ProductoController extends Controller
          $productos = Producto::with(['categoria', 'empresa'])->get();
 
         return response()->json($productos, Response::HTTP_OK);
-    }
-    
-    public function __construct()
-    {
-    request()->headers->set('Accept', 'application/json');
     }
 
 
