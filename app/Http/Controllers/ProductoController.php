@@ -13,9 +13,8 @@ class ProductoController extends BaseController
      */
     public function index()
     {
-         $productos = Producto::with(['categoria', 'empresa'])->get();
-
-        return response()->json($productos, Response::HTTP_OK);
+        $productos = Producto::with(['categoria', 'empresa'])->get();
+        return $this->sendResponse($productos, 'Productos obtenidos exitosamente');
     }
 
 
@@ -36,12 +35,11 @@ class ProductoController extends BaseController
             'unidad_medida' => 'nullable|string|max:50',
             'codigo_barras' => 'nullable|string|max:100',
             'empresa_id' => 'required|exists:empresas,id',
-            'activo' => 'nullable|in:0,1',
+            'estado' => 'nullable|in:0,1',
         ]);
 
         $producto = Producto::create($validated);
-
-        return response()->json($producto, 201);
+        return $this->sendResponse($producto, 'Producto creado exitosamente', 201);
     }
 
 
@@ -53,10 +51,10 @@ class ProductoController extends BaseController
         $producto = Producto::with(['categoria', 'empresa'])->find($id);
         
         if (!$producto) {
-            return response()->json(['message' => 'Producto no encontrado'], Response::HTTP_NOT_FOUND);
+            return $this->sendError('Producto no encontrado', [], 404);
         }
 
-        return response()->json($producto, Response::HTTP_OK);
+        return $this->sendResponse($producto, 'Producto obtenido exitosamente');
     }
 
 
@@ -77,18 +75,17 @@ class ProductoController extends BaseController
             'unidad_medida' => 'nullable|string|max:50',
             'codigo_barras' => 'nullable|string|max:100',
             'empresa_id' => 'required|exists:empresas,id',
-            'activo' => 'nullable|in:0,1',
+            'estado' => 'nullable|in:0,1',
         ]);
 
         $producto = Producto::find($id);
 
         if (!$producto) {
-            return response()->json(['message' => 'Producto no encontrado'], Response::HTTP_NOT_FOUND);
+            return $this->sendError('Producto no encontrado', [], 404);
         }
 
         $producto->update($validated);
-
-        return response()->json($producto, Response::HTTP_OK);
+        return $this->sendResponse($producto, 'Producto actualizado exitosamente');
     }
 
     
@@ -100,11 +97,10 @@ class ProductoController extends BaseController
         $producto = Producto::find($id);
 
         if (!$producto) {
-            return response()->json(['message' => 'Producto no encontrado'], Response::HTTP_NOT_FOUND);
+            return $this->sendError('Producto no encontrado', [], 404);
         }
 
         $producto->delete();
-
-        return response()->json(['message' => 'Producto eliminado correctamente'], Response::HTTP_OK);
+        return $this->sendResponse(null, 'Producto eliminado correctamente');
     }
 }

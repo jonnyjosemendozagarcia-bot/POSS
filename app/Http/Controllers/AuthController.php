@@ -27,11 +27,11 @@ class AuthController extends BaseController
 
         $token = $user->createToken('auth_token')->plainTextToken;
 
-        return response()->json([
+        return $this->sendResponse([
             'user' => $user,
             'token' => $token,
             'token_type' => 'Bearer'
-        ], Response::HTTP_CREATED);
+        ], 'Usuario registrado exitosamente', 201);
     }
 
     /**
@@ -40,25 +40,26 @@ class AuthController extends BaseController
     public function login(Request $request)
     {
         $validated = $request->validate([
-            'email' => 'required|email',
+            'login' => 'required|string',
             'password' => 'required|string',
         ]);
 
-        $user = User::where('email', $validated['email'])->first();
+        // Buscar por email O por name
+        $user = User::where('email', $validated['login'])
+                    ->orWhere('name', $validated['login'])
+                    ->first();
 
         if (!$user || !Hash::check($validated['password'], $user->password)) {
-            return response()->json([
-                'message' => 'Credenciales incorrectas'
-            ], Response::HTTP_UNAUTHORIZED);
+            return $this->sendError('Credenciales incorrectas', [], 401);
         }
 
         $token = $user->createToken('auth_token')->plainTextToken;
 
-        return response()->json([
+        return $this->sendResponse([
             'user' => $user,
             'token' => $token,
             'token_type' => 'Bearer'
-        ], Response::HTTP_OK);
+        ], 'Login exitoso');
     }
 
     /**
@@ -68,8 +69,6 @@ class AuthController extends BaseController
     {
         $request->user()->currentAccessToken()->delete();
 
-        return response()->json([
-            'message' => 'Sesión cerrada correctamente'
-        ], Response::HTTP_OK);
+        return $this->sendResponse(null, 'Sesión cerrada correctamente');
     }
 }

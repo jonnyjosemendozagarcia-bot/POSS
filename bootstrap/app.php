@@ -12,10 +12,15 @@ return Application::configure(basePath: dirname(__DIR__))
         health: '/up',
     )
     ->withMiddleware(function (Middleware $middleware): void {
-        //
+        // Vacío
     })
     ->withExceptions(function (Exceptions $exceptions): void {
         $exceptions->render(function (\Illuminate\Auth\AuthenticationException $e, $request) {
-            return response()->json(['message' => 'No autenticado'], 401);
+            return response()->json([
+                'success' => false,
+                'codigo' => 401,
+                'message' => 'No autenticado',
+                'errors' => []
+            ], 401);
         });
     })->create();

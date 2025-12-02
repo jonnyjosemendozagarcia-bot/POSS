@@ -29,11 +29,12 @@ class CategoriaController extends BaseController
             'empresa_id' => 'nullable|exists:empresas,id',
             'nombre' => 'required|string|max:255',
             'descripcion' => 'nullable|string|max:500',
-            'estado' => 'nullable|in:0,1',  // 0 = Inactivo, 1 = Activo
+            'estado' => 'nullable|in:0,1',
         ]);
+
         $categoria = Categoria::create($validated);
 
-        return response()->json($categoria, 201);
+        return $this->sendResponse($categoria, 'Categoría creada exitosamente', 201);
     }
 
 
@@ -45,10 +46,10 @@ class CategoriaController extends BaseController
         $categoria = Categoria::with('empresa')->find($id);
 
         if (!$categoria) {
-            return response()->json(['message' => 'Categoría no encontrada'], Response::HTTP_NOT_FOUND);
+            return $this->sendError('Categoría no encontrada', [], 404);
         }
 
-        return response()->json($categoria, Response::HTTP_OK);
+        return $this->sendResponse($categoria, 'Categoría obtenida exitosamente');
     }
 
 
@@ -57,23 +58,22 @@ class CategoriaController extends BaseController
      */
     public function update(Request $request, string $id)
     {
-         $validated = $request->validate([
+        $validated = $request->validate([
             'empresa_id' => 'nullable|exists:empresas,id',
             'nombre' => 'required|string|max:255',
             'descripcion' => 'nullable|string|max:500',
-            'estado' => 'nullable|in:0,1',  // 0 = Inactivo, 1 = Activo
+            'estado' => 'nullable|in:0,1',
         ]);
 
         $categoria = Categoria::find($id);
+        
         if (!$categoria) {
-            return response()->json(['message' => 'Categoría no encontrada'], Response::HTTP_NOT_FOUND);
+            return $this->sendError('Categoría no encontrada', [], 404);
         }
+
         $categoria->update($validated);
-
-        return response()->json($categoria, Response::HTTP_OK);
-
+        return $this->sendResponse($categoria, 'Categoría actualizada exitosamente');
     }
-
     
     /**
      * Remove the specified resource from storage.
@@ -81,12 +81,12 @@ class CategoriaController extends BaseController
     public function destroy(string $id)
     {
         $categoria = Categoria::find($id);
+        
         if (!$categoria) {
-            return response()->json(['message' => 'Categoría no encontrada'], Response::HTTP_NOT_FOUND);
+            return $this->sendError('Categoría no encontrada', [], 404);
         }
+
         $categoria->delete();
-
-        return response()->json(['message' => 'Categoría eliminada correctamente'], Response::HTTP_OK);
-
+        return $this->sendResponse(null, 'Categoría eliminada correctamente');
     }
 }

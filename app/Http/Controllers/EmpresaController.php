@@ -12,8 +12,10 @@ class EmpresaController extends BaseController
      */
     public function index()
     {
-        return response()->json(Empresa::all());
+        $empresas = Empresa::all();
+        return $this->sendResponse($empresas, 'Empresas obtenidas exitosamente');
     }
+
 
 
     /**
@@ -32,7 +34,7 @@ class EmpresaController extends BaseController
 
         $empresa = Empresa::create($validated);
 
-        return response()->json($empresa, 201);
+        return $this->sendResponse($empresa, 'Empresa creada exitosamente', 201);
     }
 
 
@@ -44,10 +46,10 @@ class EmpresaController extends BaseController
         $empresa = Empresa::find($id);
 
         if (!$empresa) {
-            return response()->json(['error' => 'Empresa no encontrada'], 404);
+            return $this->sendError('Empresa no encontrada', [], 404);
         }
 
-        return response()->json($empresa);
+        return $this->sendResponse($empresa, 'Empresa obtenida exitosamente');
     }
 
 
@@ -59,7 +61,7 @@ class EmpresaController extends BaseController
         $empresa = Empresa::find($id);
 
         if (!$empresa) {
-            return response()->json(['error' => 'Empresa no encontrada'], 404);
+            return $this->sendError('Empresa no encontrada', [], 404);
         }
 
         $validated = $request->validate([
@@ -73,7 +75,7 @@ class EmpresaController extends BaseController
 
         $empresa->update($validated);
 
-        return response()->json($empresa);
+        return $this->sendResponse($empresa, 'Empresa actualizada exitosamente');
     }
 
     
@@ -85,11 +87,11 @@ class EmpresaController extends BaseController
         $empresa = Empresa::find($id);
 
         if (!$empresa) {
-            return response()->json(['error' => 'Empresa no encontrada'], 404);
+            return $this->sendError('Empresa no encontrada', [], 404);
         }
 
         $empresa->delete();
-
-        return response()->json(['message' => 'Empresa eliminada correctamente']);
+        
+        return $this->sendResponse(null, 'Empresa eliminada correctamente');
     }
 }
